@@ -9,7 +9,7 @@ using ZeroMQ;
 
 namespace ChatConsoleTest
 {
-    static partial class Program
+    static partial class Server
     {
         public static void HWServer(string[] args)
         {
