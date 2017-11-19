@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroMQ;
+using Req;
 
 namespace Server
 {
@@ -12,6 +13,7 @@ namespace Server
     {
         static void Main(string[] args)
         {
+            var options = new Options();
             using (var context = ZmqContext.Create())
             {
                 using (var socket = context.CreateSocket(SocketType.REP))
@@ -19,7 +21,7 @@ namespace Server
                     socket.Bind("tcp://*:5555");
                     while (true)
                     {
-                        Thread.Sleep(1000);
+                        Thread.Sleep(options.delay);
                         var rcvdMsg = socket.Receive(Encoding.UTF8);
                         Console.WriteLine("Received: " + rcvdMsg);
                         var replyMsg = options.replyMessage.Replace("#msg#", rcvdMsg);
