@@ -31,7 +31,7 @@ namespace Examples
                     // Receive
                     using (ZFrame request = responder.ReceiveFrame())
                     {
-                        Console.WriteLine("Received from user: {0} ", request.ReadString());
+                        Console.WriteLine("Received from {0}: {1} ", UserName, requestText);
 
                         // Do some work
                         Thread.Sleep(1);
