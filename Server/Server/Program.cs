@@ -3,33 +3,54 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+
 using ZeroMQ;
 
-namespace Server
+namespace Examples
 {
-    class Program
+    static partial class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            ZContext context;
-            ZSocket server;
-            context = new ZContext();
-            server = new ZSocket(context, ZSocketType.PAIR);
-            server.Bind("tcp://*:5556");
-            while (true)
+            //
+            // Hello World server
+            //
+            // Author: metadings
+            //
+
+            if (args == null || args.Length < 1)
             {
-                ZError error;
-                ZFrame frame = server.ReceiveFrame(ZSocketFlags.DontWait, out error);
-                if (frame != null)
+                Console.WriteLine();
+                Console.WriteLine("Usage: ./{0} Server [Name]", AppDomain.CurrentDomain.FriendlyName);
+                Console.WriteLine();
+                Console.WriteLine("    Name   Your name. Default: World");
+                Console.WriteLine();
+                args = new string[] { "World" };
+            }
+
+            string name = args[0];
+
+            // Create
+            using (var context = new ZContext())
+            using (var responder = new ZSocket(context, ZSocketType.REP))
+            {
+                // Bind
+                responder.Bind("tcp://*:5570");
+
+                while (true)
                 {
-                    Console.WriteLine(frame.ToString());
+                    // Receive
+                    using (ZFrame request = responder.ReceiveFrame())
+                    {
+                        Console.WriteLine("Received {0}", request.ReadString());
+
+                        // Do some work
+                        Thread.Sleep(1);
+
+                        // Send
+                        responder.Send(new ZFrame(name));
+                    }
                 }
-                else
-                {
-                    Console.WriteLine("null");
-                }
-                Thread.Sleep(50);
             }
         }
     }
