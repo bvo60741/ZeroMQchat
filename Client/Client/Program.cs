@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 
 using ZeroMQ;
 
@@ -12,19 +8,11 @@ namespace Examples
     {
         public static void Main(string[] args)
         {
-            //
-            // Hello World client
-            //
-            // Author: metadings
-            //
 
             if (args == null || args.Length < 1)
             {
-                Console.WriteLine();
-                Console.WriteLine("Usage: ./{0} Client [Endpoint]", AppDomain.CurrentDomain.FriendlyName);
-                Console.WriteLine();
-                Console.WriteLine("    Endpoint  Where Client should connect to.");
-                Console.WriteLine("              Default is tcp://127.0.0.1:5555");
+                Console.WriteLine("Welcome to our chat (kinda)");
+                Console.WriteLine("Write your message then press Enter button");
                 Console.WriteLine();
                 args = new string[] { "tcp://127.0.0.1:5570" };
             }
@@ -38,9 +26,10 @@ namespace Examples
                 // Connect
                 requester.Connect(endpoint);
 
-                for (int n = 0; n < 10; ++n)
+                for (int n = 0; n < 30; ++n)
                 {
-                    string requestText = "Hello";
+                    string requestText;
+                    requestText = Console.ReadLine();
                     Console.Write("Sending {0}...", requestText);
 
                     // Send
@@ -50,7 +39,7 @@ namespace Examples
                     using (ZFrame reply = requester.ReceiveFrame())
                     {
                         Console.WriteLine(" Received: {0} {1}!", requestText, reply.ReadString());
-                        Thread.Sleep(10000);
+                        //Thread.Sleep(10000);
                     }
                 }
             }

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 using ZeroMQ;
@@ -12,20 +9,12 @@ namespace Examples
     {
         public static void Main(string[] args)
         {
-            //
-            // Hello World server
-            //
-            // Author: metadings
-            //
 
             if (args == null || args.Length < 1)
             {
+                Console.WriteLine("This is a server for our chat (kinda)");
                 Console.WriteLine();
-                Console.WriteLine("Usage: ./{0} Server [Name]", AppDomain.CurrentDomain.FriendlyName);
-                Console.WriteLine();
-                Console.WriteLine("    Name   Your name. Default: World");
-                Console.WriteLine();
-                args = new string[] { "World" };
+                args = new string[] { "" };
             }
 
             string name = args[0];
@@ -42,7 +31,7 @@ namespace Examples
                     // Receive
                     using (ZFrame request = responder.ReceiveFrame())
                     {
-                        Console.WriteLine("Received {0}", request.ReadString());
+                        Console.WriteLine("Received from user: {0} ", request.ReadString());
 
                         // Do some work
                         Thread.Sleep(1);
