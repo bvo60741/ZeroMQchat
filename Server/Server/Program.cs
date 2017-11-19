@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ZeroMQ;
-using Req;
 
 namespace Server
 {
@@ -13,22 +12,24 @@ namespace Server
     {
         static void Main(string[] args)
         {
-            var options = new Options();
-            using (var context = ZmqContext.Create())
+            ZContext context;
+            ZSocket server;
+            context = new ZContext();
+            server = new ZSocket(context, ZSocketType.PAIR);
+            server.Bind("tcp://*:5556");
+            while (true)
             {
-                using (var socket = context.CreateSocket(SocketType.REP))
+                ZError error;
+                ZFrame frame = server.ReceiveFrame(ZSocketFlags.DontWait, out error);
+                if (frame != null)
                 {
-                    socket.Bind("tcp://*:5555");
-                    while (true)
-                    {
-                        Thread.Sleep(options.delay);
-                        var rcvdMsg = socket.Receive(Encoding.UTF8);
-                        Console.WriteLine("Received: " + rcvdMsg);
-                        var replyMsg = options.replyMessage.Replace("#msg#", rcvdMsg);
-                        Console.WriteLine("Sending : " + replyMsg + Environment.NewLine);
-                        socket.Send(replyMsg, Encoding.UTF8);
-                    }
+                    Console.WriteLine(frame.ToString());
                 }
+                else
+                {
+                    Console.WriteLine("null");
+                }
+                Thread.Sleep(50);
             }
         }
     }
