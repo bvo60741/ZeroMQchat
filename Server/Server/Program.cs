@@ -2,33 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 using ZeroMQ;
-namespace zmqtest
+
+namespace Server
 {
     class Program
     {
         static void Main(string[] args)
         {
-            ZContext context;
-            ZSocket server;
-            context = new ZContext();
-            server = new ZSocket(context, ZSocketType.PAIR);
-            server.Bind("tcp://*:5556");
-            while (true)
+            using (var context = ZmqContext.Create())
             {
-                ZError error;
-                ZFrame frame = server.ReceiveFrame(ZSocketFlags.DontWait, out error);
-                if (frame != null)
+                using (var socket = context.CreateSocket(SocketType.REP))
                 {
-                    Console.WriteLine(frame.ToString());
+                    socket.Bind("tcp://*:5555");
+                    while (true)
+                    {
+                        Thread.Sleep(1000);
+                        var rcvdMsg = socket.Receive(Encoding.UTF8);
+                        Console.WriteLine("Received: " + rcvdMsg);
+                        var replyMsg = options.replyMessage.Replace("#msg#", rcvdMsg);
+                        Console.WriteLine("Sending : " + replyMsg + Environment.NewLine);
+                        socket.Send(replyMsg, Encoding.UTF8);
+                    }
                 }
-                else
-                {
-                    Console.WriteLine("null");
-                }
-                Thread.Sleep(50);
             }
         }
     }
